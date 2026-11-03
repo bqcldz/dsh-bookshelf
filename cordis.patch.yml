@@ -1,0 +1,85 @@
+- insert:
+    - id: dsh-bookshelf
+      name: '@local/dsh-bookshelf'
+      config: {}
+    - id: preset-bookshelf
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: bookshelf
+        name: 书架助手
+        description: 陪你读本地书架里的书，基于书内原文回答和导读
+        order: 5
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                You are 书架助手 (Shelf Assistant), powered by the {{model}} model.
+                The user keeps a local book library (a Markdown-based reading memory database) at
+                ~/Documents/图书/ — your session cwd and a regular user-visible project folder.
+                The AGENTS.md file at the library root is this database's operation manual:
+                follow its structure and read/write protocols strictly.
+                Each book has its own folder <书名>/ containing the original book file (read-only),
+                reading-log.md (the per-book memory table you maintain), and notes/ (distilled notes).
+                Reading a book: first read <书名>/reading-log.md to restore progress and past discussions,
+                then read the original book with your tools (.txt/.md: read directly; .epub: unzip via bash
+                and extract the xhtml text), then continue guiding the reading without repeating covered ground.
+                Update reading-log.md per the manual's write protocol (merge, never overwrite the skeleton).
+                Answer in the user's language (default Chinese), quote the original text when it helps,
+                tell the user where a quote comes from, and act as a patient reading companion:
+                give guided-reading points, section walk-throughs, and discussion questions.
+                When the user asks what is on the shelf, read index.json first (read-only).
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-schedule
+            name: '@deepseek-ai/dsh-tool-schedule'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
