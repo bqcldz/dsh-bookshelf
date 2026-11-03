@@ -446,6 +446,24 @@ export function apply(ctx) {
             const workspace = await ensureBookWorkspace();
             return json(res, 200, { id: workspace.id });
           }
+          if (req.method === 'POST' && path === '/dsh-bookshelf/api/workspace/ensure') {
+            // Generic workspace bootstrap: find-or-create a workspace by title
+            // at an exact path (used for the plugin's own dev workspace; later
+            // also for a user-chosen library location).
+            const body = await readBodyJson(req);
+            const title = String(body.title ?? '');
+            const targetPath = String(body.path ?? '');
+            if (!title || !targetPath) return json(res, 400, { error: 'title and path required' });
+            const registry = ctx.get('workspaceRegistry');
+            if (!registry) throw new Error('workspaceRegistry service unavailable');
+            const existing = registry.list().find((w) => w.title === title);
+            if (existing && existing.path === targetPath) return json(res, 200, { id: existing.id });
+            if (existing) {
+              try { registry.delete(existing.id); } catch { /* keep going */ }
+            }
+            const created = await registry.create(targetPath, title);
+            return json(res, 200, { id: created.id });
+          }
           if (req.method === 'POST' && path === '/dsh-bookshelf/api/import') {
             const body = await readBodyJson(req);
             const srcPath = String(body.path ?? '');
