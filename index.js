@@ -6,6 +6,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { readFile, writeFile, mkdir, readdir, copyFile, unlink, rename } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
 import { randomUUID } from 'node:crypto';
 
@@ -152,6 +153,22 @@ async function ensureStructure() {
     dirty = true;
   }
   if (dirty) await writeIndex(list);
+  await ensureSampleBooks();
+}
+
+// First run only: import the bundled public-domain sample books so a fresh
+// install opens with a ready-to-read shelf. A marker file prevents re-import
+// after the user deletes the samples.
+async function ensureSampleBooks() {
+  const marker = join(libraryRoot, '.samples-imported');
+  if (existsSync(marker) || existsSync(indexPath)) return;
+  const samplesDir = fileURLToPath(new URL('./samples', import.meta.url));
+  if (!existsSync(samplesDir)) return;
+  for (const name of await readdir(samplesDir)) {
+    if (!BOOK_EXTENSIONS.has(name.slice(name.lastIndexOf('.')).toLowerCase())) continue;
+    try { await importOneFile(join(samplesDir, name), name); } catch { /* skip broken sample */ }
+  }
+  await writeFile(marker, new Date().toISOString(), 'utf8');
 }
 
 function bookPath(book) {
@@ -439,6 +456,9 @@ export function apply(ctx) {
         try {
           await ensureStructure();
           if (req.method === 'GET' && path === '/dsh-bookshelf/api/books') {
+            // Opening the shelf also materializes the 图书 workspace, so the
+            // user sees it appear in the sidebar on first use.
+            await ensureBookWorkspace();
             const list = await readIndex();
             return json(res, 200, list.map(publicBook));
           }
