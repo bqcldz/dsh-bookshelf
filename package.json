@@ -1,7 +1,6 @@
 {
   "name": "@local/dsh-bookshelf",
   "version": "0.2.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./index.js",
@@ -9,7 +8,8 @@
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
     "./CHANGELOG.md": "./CHANGELOG.md",
-    "./README.md": "./README.md"
+    "./README.md": "./README.md",
+    "./LICENSE": "./LICENSE"
   },
   "files": [
     "index.js",
@@ -18,7 +18,8 @@
     "locale/*.json",
     "icon.svg",
     "CHANGELOG.md",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "dsh": {
     "bundle": {
@@ -33,5 +34,20 @@
         "@deepseek-ai/dsh-client-ui-session"
       ]
     }
-  }
+  },
+  "description": "DeepSeek Harness 本地图书管理插件：上传图书、书架展示，点书跳转原生会话由书架助手领读，读书记忆以 Markdown 数据库持久化。",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bqcldz/dsh-bookshelf.git"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "bookshelf",
+    "reading",
+    "library"
+  ],
+  "license": "MIT",
+  "author": "方志豪 (bqcldz)"
 }
