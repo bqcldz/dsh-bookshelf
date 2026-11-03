@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-bookshelf",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "exports": {
     ".": "./index.js",
@@ -9,7 +9,8 @@
     "./icon": "./icon.svg",
     "./CHANGELOG.md": "./CHANGELOG.md",
     "./README.md": "./README.md",
-    "./LICENSE": "./LICENSE"
+    "./LICENSE": "./LICENSE",
+    "./scripts/*": "./scripts/*"
   },
   "files": [
     "index.js",
@@ -20,7 +21,8 @@
     "CHANGELOG.md",
     "README.md",
     "LICENSE",
-    "samples/*.epub"
+    "samples/*.epub",
+    "scripts/*.mjs"
   ],
   "dsh": {
     "bundle": {

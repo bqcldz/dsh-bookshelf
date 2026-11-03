@@ -3,7 +3,7 @@
 // that the Client panel calls with same-origin fetch.
 
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { readFile, writeFile, mkdir, readdir, copyFile, unlink, rename } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -15,8 +15,12 @@ const TEXT_EXTRACT_EXTENSIONS = new Set(['.txt', '.md', '.epub', '.docx']);
 const MAX_TEXT_CHARS = 24000;
 
 // The library IS the user-visible 图书 project folder; the plugin is only a
-// window onto it. Legacy location for one-time migration below.
-const libraryRoot = join(homedir(), 'Documents', '图书');
+// window onto it. DSH_BOOKSHELF_ROOT overrides the location (used by the
+// fresh-install smoke test and available to power users). Legacy location
+// for one-time migration below.
+const libraryRoot = process.env.DSH_BOOKSHELF_ROOT
+  ? resolve(process.env.DSH_BOOKSHELF_ROOT)
+  : join(homedir(), 'Documents', '图书');
 const legacyRoot = join(homedir(), '.dsh', 'plugin-data', 'dsh-bookshelf', 'library');
 const coversDir = join(libraryRoot, 'covers');
 const indexPath = join(libraryRoot, 'index.json');
